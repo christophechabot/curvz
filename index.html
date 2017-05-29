@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <style>
+    svg {
+      width: 400px;
+      height: 400px;
+    }
+  </style>
+
+  <svg viewBox="0 0 600 600">
+    <path id="myPath"
+          stroke="#EF233C"
+          stroke-width="2"
+          fill="none"
+          d=""></path>
+  </svg>
+
+
+  <script src="curvz.js"></script>
+
+  <script>
+    var circle = CURVZ.curve(CURVZ.CIRCLE());
+    var ellipsis = CURVZ.curve(CURVZ.ELLIPSIS({
+      a: 1.5,
+      b: 0.7
+    }), {
+      x0: 200,
+      x1: 300,
+      y0: 200,
+      y1: 300
+    });
+
+
+    var curve1Fn = function(opts) {
+      var a = opts.a || 1,
+          b = opts.b || 1,
+          c = opts.c || 1,
+          d = opts.d || 1,
+          j = opts.j || 1,
+          k = opts.k || 1;
+
+      return function(t) {
+        return {
+          x: Math.cos(a*t) - Math.pow(Math.cos(b*t), j),
+          y: Math.sin(c*t) - Math.pow(Math.sin(d*t), k)
+        };
+      };
+    };
+
+    var curve1 = CURVZ.curve(
+      curve1Fn({
+        a: 1,
+        b: 80,
+        c: 1,
+        d: 80,
+        j: 3,
+        k: 3
+      }), {
+        x0: 300,
+        x1: 450,
+        y0: 300,
+        y1: 450
+      });
+
+    var star = CURVZ.curve(CURVZ.HYPOTROCHOID({
+        R: 1,
+        r: 0.6,
+        d: 1
+      }), {     
+        x0: 300,
+        x1: 450,
+        y0: 300,
+        y1: 450
+      });
+
+    var spirograph1 = CURVZ.curve(CURVZ.HYPOTROCHOID({
+        R: 1,
+        r: 0.52,
+        d: 0.24
+      }), {
+        x0: 300,
+        x1: 450,
+        y0: 300,
+        y1: 450
+      });
+
+    var path = document.getElementById("myPath"),
+        curve;
+
+
+  //  curve = ellipsis;
+  //  path.setAttribute("d", curve.getPath(0, 1, 100));
+
+  //  curve = curve1;
+  //  path.setAttribute("d", curve.getPath(0, 1, 5000));
+
+  //  curve = star;
+  //  path.setAttribute("d", curve.getPath(0, 5, 100));
+
+    curve = spirograph1;
+    // path.setAttribute("d", curve.getPath(0, 1, 1000));
+
+    
+    CURVZ.drawCurve(path, curve, {
+      duration: 5000
+    });
+
+
+  </script>
+</body>
+</html>
