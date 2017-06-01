@@ -30,10 +30,33 @@
 
 <svg viewBox="0 0 600 600"
      id="spirograph">
+  
   <path id="nextPath"
         stroke-width="2"
         fill="none"
-        d=""></path>
+        d="" />
+
+  <circle id="bigCircle"
+          stroke-width="1"
+          stroke="#6e6e6e"
+          fill="none"
+          cx="300"
+          cy="300"
+          r="150" />
+  <circle id="smallCircle"
+          stroke-width="1"
+          stroke="#6e6e6e"
+          fill="none"
+          cx="360"
+          cy="300"
+          r="90" />
+  <line id="penLine"
+        stroke-width="1"
+        stroke="#6e6e6e"
+        x1="360"
+        y1="300"
+        x2="510"
+        y2="300" />
 </svg>
 
 <div id="form">
@@ -63,6 +86,7 @@
 
 <script>
   var curve,
+    centerCurve,
     spirograph = document.getElementById("spirograph"),
     form = document.getElementById("form"),
     drawButton = document.getElementById("drawButton"),
@@ -73,20 +97,28 @@
     span_nbLoops = document.getElementById("nbLoops"),
     span_nbPetals = document.getElementById("nbPetals"),
     nextPath = document.getElementById("nextPath"),
+    bigCircle = document.getElementById("bigCircle"),
+    smallCircle = document.getElementById("smallCircle"),
+    penLine = document.getElementById("penLine"),
     R,
     r,
     d,
     nbPoints,
-    getCurve = function (R, r, d) {
+    x0 = 300,
+    y0 = 300,
+    x1 = 450,
+    y1 = 450,
+    duration = 5000,
+    getCurve = function (_R, _r, _d) {
       return CURVZ.curve(CURVZ.HYPOTROCHOID({
-        R: R,
-        r: r,
-        d: d
+        R: _R,
+        r: _r,
+        d: _d
       }), {
-        x0: 300,
-        x1: 450,
-        y0: 300,
-        y1: 450
+        x0: x0,
+        x1: x1,
+        y0: y0,
+        y1: y1
       });
     },
     computeCurve = function () {
@@ -97,6 +129,7 @@
       nbPoints = parseFloat(input_nbPoints.value);
 
       curve = getCurve(R, r, d);
+      centerCurve = getCurve(R, r, 0);
     },
     updateNextPath = function () {
       computeCurve();
@@ -104,10 +137,53 @@
       nextPath.setAttribute("stroke", color);
       CURVZ.drawCurve(nextPath, curve, {duration: 1, nbPoints: nbPoints});
 
+      var curveCoords = curve.getCoords(0);
+      var centerCurveCoords = centerCurve.getCoords(0);
+
+      bigCircle.setAttribute("r", R * (x1-x0));
+      smallCircle.setAttribute("cx", centerCurveCoords.x);
+      smallCircle.setAttribute("cy", centerCurveCoords.y);
+      smallCircle.setAttribute("r", r * (x1-x0));
+      penLine.setAttribute("x1", centerCurveCoords.x);
+      penLine.setAttribute("y1", centerCurveCoords.y);
+      penLine.setAttribute("x2", curveCoords.x);
+      penLine.setAttribute("y2", curveCoords.y);
+
       span_nbLoops.innerHTML = curve.curveObj.nbLoops;
       span_nbPetals.innerHTML = curve.curveObj.nbPetals;
     },
+    addNewPathUpdateFn = function(path) {
+      // var pathLength;
+
+      // path.style.visibility = "hidden";
+      // path.setAttribute("d", curve.getPath(0, 1, nbPoints));
+
+      // pathLength = path.getTotalLength();
+
+      // path.style.strokeDasharray = pathLength;
+      // path.style.strokeDashoffset = pathLength;
+      // path.style.visibility = "visible";
+
+
+      path.setAttribute("d", "M " + curve.getCoords(0).x + " " + curve.getCoords(0).y);
+
+      return function(t) {
+        var curveCoords = curve.getCoords(t);
+        var centerCurveCoords = centerCurve.getCoords(t);
+
+        smallCircle.setAttribute("cx", centerCurveCoords.x);
+        smallCircle.setAttribute("cy", centerCurveCoords.y);
+        penLine.setAttribute("x1", centerCurveCoords.x);
+        penLine.setAttribute("y1", centerCurveCoords.y);
+        penLine.setAttribute("x2", curveCoords.x);
+        penLine.setAttribute("y2", curveCoords.y);
+
+        path.setAttribute("d", path.getAttribute("d") + " L " + curveCoords.x + " " + curveCoords.y);
+        // path.style.strokeDashoffset = pathLength * (1-t);
+      };
+    },
     addNewPath = function () {
+      var pathLength = nextPath.getTotalLength();
       nextPath.setAttribute("d", "");
 
       var path = document.createElementNS('http://www.w3.org/2000/svg', "path");
@@ -116,9 +192,12 @@
       path.setAttribute("stroke-width", "2");
       path.setAttribute("fill", "none");
 
+
       spirograph.insertBefore(path, nextPath);
 
-      CURVZ.drawCurve(path, curve, {duration: 2000, nbPoints: nbPoints});
+      // CURVZ.drawCurve(path, curve, {duration: duration, nbPoints: nbPoints});
+
+      CURVZ.animate(addNewPathUpdateFn(path), { duration: Math.floor(1.5*pathLength) });
 
     };
 

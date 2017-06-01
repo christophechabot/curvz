@@ -107,7 +107,7 @@
     const options = opts || {},
           R = options.R || 1,
           r = options.r || 0.6,
-          d = options.d || 1,
+          d = (options.d == undefined) ? 1 : options.d,
           nbLoops = _lcm(R * 100, r * 100) / (R * 100), //nb of loops required to go back to starting point
           nbPetals = _lcm(R * 100, r * 100) / (r * 100); //nb of loops performed by the inner circle
 
