@@ -1,7 +1,7 @@
-var CURVZ = require("./curvz");
+var CURVZ = require("./src/curvz");
 
 
-var circle = CURVZ.curve(CURVZ.CIRCLE);
+var circle = CURVZ.curve(CURVZ.CIRCLE());
 
 
 console.log(circle);

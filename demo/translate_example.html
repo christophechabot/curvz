@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<style>
+
+</style>
+
+<div style="position: relative; display: inline-block; width: 200px; height: 200px; border: 1px solid #c1c1c1;">
+
+  <div id="myDiv"
+       style="position: absolute; left: 0; top: 0; width: 40px; height: 40px; border: 1px solid darkred; background-color: indianred; border-radius: 50%;">
+  </div>
+
+</div>
+
+
+
+<script src="../src/curvz.js"></script>
+
+<script>
+  var myCurve = CURVZ.curve(
+    CURVZ.ELLIPSIS({ a: 1.2, b: 0.7 }),
+    { x0: 100, y0: 100, x1: 150, y1: 150}
+  );
+
+  var myDiv = document.getElementById("myDiv");
+
+  CURVZ.translateAlongCurve(myDiv, myCurve,
+    {
+      duration: 2000,
+      easing: CURVZ.BOUNCEOUT
+    }
+  );
+
+</script>
+</body>
+</html>

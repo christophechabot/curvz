@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<style>
+  #container {
+    position: relative;
+    display: inline-block;
+    width: 400px;
+    height: 400px;
+    border: 1px solid black;
+  }
+
+  .icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(0, 0);
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 1px solid black;
+  }
+
+  #icon1 {
+    background-color: red;
+    border-radius: 50%;
+    opacity: 1;
+  }
+
+  #icon2 {
+    background-color: dodgerblue;
+    border-radius: 50%;
+    opacity: 1;
+  }
+
+  #icon3 {
+    background-color: forestgreen;
+    border-radius: 50%;
+    opacity: 1;
+  }
+
+  #icon4 {
+    background-color: orangered;
+    border-radius: 50%;
+    opacity: 1;
+  }
+
+  #icon5 {
+    background-color: white;
+    border-radius: 50%;
+    opacity: 1;
+  }
+
+
+</style>
+
+<div id="container">
+  <div id="icon1" class="icon"></div>
+  <div id="icon2" class="icon"></div>
+  <div id="icon3" class="icon"></div>
+  <div id="icon4" class="icon"></div>
+  <div id="icon5" class="icon"></div>
+</div>
+
+
+<script src="../src/curvz.js"></script>
+
+<script>
+  var icon1 = document.getElementById("icon1"),
+    icon2 = document.getElementById("icon2"),
+    icon3 = document.getElementById("icon3"),
+    icon4 = document.getElementById("icon4"),
+    icon5 = document.getElementById("icon5"),
+    icon1HalfWidth = icon1.offsetWidth / 2,
+    icon1HalfHeight = icon1.offsetHeight / 2,
+    a = 1.2,
+    b = 0.3,
+    x0 = 200,
+    y0 = 200,
+    x1 = 300,
+    y1 = 300,
+    duration = 2000,
+    easing =  CURVZ.BOUNCEOUT; // CURVZ.EASEOUTELASTIC;
+
+  var curve = CURVZ.curve(
+    CURVZ.ELLIPSIS({a: a, b: b}),
+    {x0: x0, x1: x1, y0: y0, y1: y1}
+  );
+
+
+  var animationOpts1 = {
+    duration: duration,
+    easing: easing,
+    tStart: 0.25,
+    tEnd: 0.5
+  };
+  var animationOpts2 = {
+    duration: duration,
+    easing: easing,
+    tStart: 0.25,
+    tEnd: 0.65
+  };
+  var animationOpts3 = {
+    duration: duration,
+    easing: easing,
+    tStart: 0.25,
+    tEnd: 0.75
+  };
+  var animationOpts4 = {
+    duration: duration,
+    easing: easing,
+    tStart: 0.25,
+    tEnd: 0.85
+  };
+  var animationOpts5 = {
+    duration: duration,
+    easing: easing,
+    tStart: 0.25,
+    tEnd: 1
+  };
+
+
+  var updateFn = function (element) {
+    return function (t) {
+      var coords = curve.getCoords(t),
+        x = coords.x - icon1HalfWidth,
+        y = coords.y - icon1HalfHeight,
+        scaleMin = 0.5,
+        scaleMax = 1,
+        opacityMin = 0.5,
+        opacityMax = 1,
+        yMin = y0 - b * (y1 - y0),
+        yMax = y0 + b * (y1 - y0),
+        scale = scaleMin + (coords.y - yMin) / (yMax - yMin) * (scaleMax - scaleMin),
+        opacity = opacityMin + (coords.y - yMin) / (yMax - yMin) * (opacityMax - opacityMin);
+
+
+      element.style.transform = "translate(" + x + "px," + y + "px) scale(" + scale + ")";
+      element.style.opacity = opacity;
+    }
+  };
+
+
+  CURVZ.animate(updateFn(icon1), animationOpts1);
+  CURVZ.animate(updateFn(icon2), animationOpts2);
+  CURVZ.animate(updateFn(icon3), animationOpts3);
+  CURVZ.animate(updateFn(icon4), animationOpts4);
+  CURVZ.animate(updateFn(icon5), animationOpts5);
+
+
+</script>
+</body>
+</html>

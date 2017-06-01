@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<style>
+  #buttonsDiv {
+    text-align: center;
+  }
+
+  #buttonsDiv span {
+    display: inline-block;
+    margin: 2px 8px;
+    padding: 2px 4px;
+    border: 1px solid #4e4e4e;
+    border-radius: 4px;
+    color: #4e4e4e;
+    background-color: white;
+    cursor: pointer;
+  }
+
+  #buttonsDiv span:hover {
+    color: white;
+    background-color: #4e4e4e;
+  }
+
+  #inputs {
+    text-align: center;
+    margin: 8px 0;
+  }
+
+  svg {
+    display: block;
+    margin: 16px auto;
+    width: 400px;
+    height: 400px;
+    border: 1px solid #4e4e4e;
+  }
+
+  .equation {
+    text-align: center;
+    font-size: 20px;
+    line-height: 1.4;
+  }
+
+  .equation span {
+    font-weight: bold;
+  }
+
+  .equationParams {
+    text-align: center;
+    font-size: 18px;
+    line-height: 1.4;
+  }
+</style>
+
+<div id="buttonsDiv"></div>
+
+<div id="inputs">
+  <label>
+    Nb points:
+    <input type="text"
+           id="nbPoints"
+           value="1000"
+           size="8" />
+  </label>
+  <label>
+    Draw points only:
+    <input type="checkbox"
+           id="pointsOnly"/>
+  </label>
+</div>
+
+<svg viewBox="0 0 400 400">
+  <image xlink:href="../img/coordinate_system.png"
+         x="30"
+         y="30"
+         height="340"
+         width="340"></image>
+
+  <path id="curvePath"
+        stroke="#EF233C"
+        stroke-width="2"
+        fill="none"
+        d=""></path>
+</svg>
+
+<div>
+  <div class="equation">
+    x(t) = <span id="xEquation">Some function of t</span>
+  </div>
+  <div class="equation">
+    y(t) = <span id="yEquation">Some function of t</span>
+  </div>
+  <div class="equationParams">
+    <span id="params">Depending on some parameters</span>
+  </div>
+</div>
+
+
+<script src="../src/curvz.js"></script>
+
+<script>
+  var viewOptions = {x0: 200, x1: 350, y0: 200, y1: 350},
+    customSpiral = function (opts) {
+      const options = opts || {},
+        a = options.a || 1,
+        r = options.r || 1,
+        start = 0,
+        end = 4 * Math.PI,
+        breakpoint = 2 * Math.PI;
+
+      return {
+        start: start,
+        end: end,
+        getXY: function (t) {
+          return {
+            x: (t < breakpoint) ? t / breakpoint * r * Math.cos(a * t) : Math.cos(t),
+            y: (t < breakpoint) ? t / breakpoint * r * Math.sin(a * t) : Math.sin(t)
+          }
+        }
+      };
+    },
+    butterfly = function() {
+      return {
+        start: 0,
+        end: 2 * Math.PI,
+        getXY: function(t) {
+          return {
+            x: Math.sin(t)*(Math.pow(Math.E, Math.cos(t)) - 2*Math.cos(4*t)-Math.pow(Math.sin(t/12), 5))/3,
+            y: Math.cos(t)*(Math.pow(Math.E, Math.cos(t)) - 2*Math.cos(4*t)-Math.pow(Math.sin(t/12), 5))/3
+          }
+        }
+      }
+    },
+    heart = function() {
+      return {
+        start: 0,
+        end: 2 * Math.PI,
+        getXY: function(t) {
+          return {
+            x: Math.pow(Math.sin(t), 3),
+            y: (13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t))/16
+          }
+        }
+      }
+    },
+    curves = [
+      {
+        name: "Circle",
+        curve: CURVZ.curve(CURVZ.CIRCLE(), viewOptions),
+        xEquation: 'r * cos(t)',
+        yEquation: 'r * sin(t)',
+        params: 'r=1'
+      },
+      {
+        name: "Ellipsis (1.2, 0.7)",
+        curve: CURVZ.curve(CURVZ.ELLIPSIS({a: 1.2, b: 0.7}), viewOptions),
+        xEquation: 'a * cos(t)',
+        yEquation: 'b * sin(t)',
+        params: 'a=1.2, b=0.7'
+      },
+      {
+        name: "Spiral (1, 1)",
+        curve: CURVZ.curve(CURVZ.SPIRAL({a: 1, r: 1}), viewOptions),
+        xEquation: 't/(2PI) * r * cos(a * t)',
+        yEquation: 't/(2PI) * r * sin(a * t)',
+        params: 'a=1, r=1'
+      },
+      {
+        name: "Spiral (2, 1)",
+        curve: CURVZ.curve(CURVZ.SPIRAL({a: 2, r: 1}), viewOptions),
+        xEquation: 't/(2PI) * r * cos(a * t)',
+        yEquation: 't/(2PI) * r * sin(a * t)',
+        params: 'a=2, r=1'
+      },
+      {
+        name: "Lissajous (1, 1, 3, 2)",
+        curve: CURVZ.curve(CURVZ.LISSAJOUS({a: 1, b: 1, kx: 3, ky: 2}), viewOptions),
+        xEquation: 'a * cos(kx * t)',
+        yEquation: 'b * sin(ky * t)',
+        params: 'a=1, b=1, kx=3, ky=2'
+      },
+      {
+        name: "Lissajous (1, 0.5, 1, 2)",
+        curve: CURVZ.curve(CURVZ.LISSAJOUS({a: 1, b: 0.5, kx: 1, ky: 2}), viewOptions),
+        xEquation: 'a * cos(kx * t)',
+        yEquation: 'b * sin(ky * t)',
+        params: 'a=1, b=0.5, kx=1, ky=2'
+      },
+      {
+        name: "Lissajous (1, 0.7, 3, 4)",
+        curve: CURVZ.curve(CURVZ.LISSAJOUS({a: 1, b: 0.7, kx: 3, ky: 4}), viewOptions),
+        xEquation: 'a * cos(kx * t)',
+        yEquation: 'b * sin(ky * t)',
+        params: 'a=1, b=0.7, kx=3, ky=4'
+      },
+      {
+        name: "Lissajous (1, 0.8, 5, 4)",
+        curve: CURVZ.curve(CURVZ.LISSAJOUS({a: 1, b: 0.8, kx: 5, ky: 4}), viewOptions),
+        xEquation: 'a * cos(kx * t)',
+        yEquation: 'b * sin(ky * t)',
+        params: 'a=1, b=0.8, kx=5, ky=4'
+      },
+      {
+        name: "Hypotrochoid (0.8, 0.48, 0.8)",
+        curve: CURVZ.curve(CURVZ.HYPOTROCHOID({R: 0.8, r: 0.48, d: 0.8}), viewOptions),
+        xEquation: '(R-r) * cos(t) + d*cos(((R-r)/r)*t)',
+        yEquation: '(R-r) * sin(t) - d*sin(((R-r)/r)*t)',
+        params: 'R=0.8, r=0.48, d=0.8'
+      },
+      {
+        name: "Hypotrochoid (0.8, 0.35, 0.7)",
+        curve: CURVZ.curve(CURVZ.HYPOTROCHOID({R: 0.8, r: 0.35, d: 0.7}), viewOptions),
+        xEquation: '(R-r) * cos(t) + d*cos(((R-r)/r)*t)',
+        yEquation: '(R-r) * sin(t) - d*sin(((R-r)/r)*t)',
+        params: 'R=0.8, r=0.35, d=0.7'
+      },
+      {
+        name: "Hypotrochoid (0.8, 0.33, 0.4)",
+        curve: CURVZ.curve(CURVZ.HYPOTROCHOID({R: 0.8, r: 0.33, d: 0.4}), viewOptions),
+        xEquation: '(R-r) * cos(t) + d*cos(((R-r)/r)*t)',
+        yEquation: '(R-r) * sin(t) - d*sin(((R-r)/r)*t)',
+        params: 'R=0.8, r=0.33, d=0.4'
+      },
+      {
+        name: "Hypotrochoid (0.8, 0.2, 0.2)",
+        curve: CURVZ.curve(CURVZ.HYPOTROCHOID({R: 0.8, r: 0.2, d: 0.2}), viewOptions),
+        xEquation: '(R-r) * cos(t) + d*cos(((R-r)/r)*t)',
+        yEquation: '(R-r) * sin(t) - d*sin(((R-r)/r)*t)',
+        params: 'R=0.8, r=0.2, d=0.2'
+      },
+      {
+        name: "Hypotrochoid (1, 0.2, 0.2)",
+        curve: CURVZ.curve(CURVZ.HYPOTROCHOID({R: 1, r: 0.2, d: 0.2}), viewOptions),
+        xEquation: '(R-r) * cos(t) + d*cos(((R-r)/r)*t)',
+        yEquation: '(R-r) * sin(t) - d*sin(((R-r)/r)*t)',
+        params: 'R=1, r=0.2, d=0.2'
+      },
+      {
+        name: "Hypotrochoid (1.2, 0.2, 0.2)",
+        curve: CURVZ.curve(CURVZ.HYPOTROCHOID({R: 1.2, r: 0.2, d: 0.2}), viewOptions),
+        xEquation: '(R-r) * cos(t) + d*cos(((R-r)/r)*t)',
+        yEquation: '(R-r) * sin(t) - d*sin(((R-r)/r)*t)',
+        params: 'R=1.2, r=0.2, d=0.2'
+      },
+      {
+        name: "Hypotrochoid (0.7, 1, 1)",
+        curve: CURVZ.curve(CURVZ.HYPOTROCHOID({R: 0.7, r: 1, d: 1}), viewOptions),
+        xEquation: '(R-r) * cos(t) + d*cos(((R-r)/r)*t)',
+        yEquation: '(R-r) * sin(t) - d*sin(((R-r)/r)*t)',
+        params: 'R=0.7, r=1, d=1'
+      },
+      {
+        name: "Custom Spiral (1, 1)",
+        curve: CURVZ.curve(customSpiral({a: 3, r: 1}), viewOptions),
+        xEquation: '(t < (2PI)) ? t/(2PI) * r * cos(a * t) : cos(t)',
+        yEquation: '(t < (2PI)) ? t/(2PI) * r * sin(a * t) : sin(t)',
+        params: 'a=1, r=1'
+      },
+      {
+        name: "Butterfly",
+        curve: CURVZ.curve(butterfly(), viewOptions),
+        xEquation: 'sin(t)(e^cos(t)-2cos(4t)-sin^5(t/12))/3',
+        yEquation: 'cos(t)(e^cos(t)-2cos(4t)-sin^5(t/12))/3',
+        params: 'No parameters'
+      },
+      {
+        name: "Heart",
+        curve: CURVZ.curve(heart(), viewOptions),
+        xEquation: 'sin(t)^3',
+        yEquation: '(13cos(t) - 5cos(2*t) - 2cos(3t) - cos(4t))/16',
+        params: 'No parameters'
+      },
+      {
+        name: "Fermat's spiral",
+        curve: CURVZ.curve(CURVZ.FERMATSPIRAL({ a: 3, r: 1}), viewOptions),
+        xEquation: 'see Source code',
+        yEquation: 'see Source code',
+        params: 'No parameters'
+      },
+      {
+        name: "Rhodonea (2, 1)",
+        curve: CURVZ.curve(CURVZ.RHODONEA({ a: 2, r: 1}), viewOptions),
+        xEquation: 'see Source code',
+        yEquation: 'see Source code',
+        params: 'No parameters'
+      },
+      {
+        name: "Rhodonea (5, 1)",
+        curve: CURVZ.curve(CURVZ.RHODONEA({ a: 5, r: 1}), viewOptions),
+        xEquation: 'see Source code',
+        yEquation: 'see Source code',
+        params: 'No parameters'
+      }
+    ],
+    buttonsDiv = document.getElementById("buttonsDiv"),
+    curvePath = document.getElementById("curvePath"),
+    xEquation = document.getElementById("xEquation"),
+    yEquation = document.getElementById("yEquation"),
+    params = document.getElementById("params"),
+    nbPointsInput = document.getElementById("nbPoints"),
+    pointsOnlyInput = document.getElementById("pointsOnly");
+
+  curves.forEach(function (c) {
+    var button = document.createElement("span");
+    button.innerHTML = c.name;
+    buttonsDiv.appendChild(button);
+    button.addEventListener("click", function () {
+      CURVZ.drawCurve(
+        curvePath,
+        c.curve,
+        {
+          duration: 2000,
+          easing: CURVZ.LINEAR,
+          nbPoints: parseInt(nbPointsInput.value),
+          pointsOnly: pointsOnlyInput.checked
+        }
+      );
+
+      xEquation.innerHTML = c.xEquation;
+      yEquation.innerHTML = c.yEquation;
+      params.innerHTML = c.params;
+
+      if (c.curve.curveObj.nbLoops && c.curve.curveObj.nbPetals) {
+        console.log({
+          nbLoops: c.curve.curveObj.nbLoops,
+          nbPetals: c.curve.curveObj.nbPetals
+        });
+      }
+    });
+  });
+
+
+</script>
+</body>
+</html>

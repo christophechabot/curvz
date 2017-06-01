@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<style>
+  #container {
+    position: relative;
+    display: inline-block;
+    width: 400px;
+    height: 400px;
+    border: 1px solid black;
+  }
+
+  .box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(0, 0);
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 1px solid black;
+  }
+
+  #box1 {
+    background-color: red;
+  }
+
+  #box2 {
+    background-color: dodgerblue;
+    border-radius: 50%;
+  }
+
+  #box3 {
+    background-color: forestgreen;
+    border-radius: 50%;
+  }
+
+  #box4 {
+    background-color: orangered;
+    border-radius: 33%;
+  }
+
+  #box5 {
+    background-color: white;
+    border-radius: 25%;
+  }
+
+</style>
+
+<div id="container">
+  <svg viewBox="0 0 400 400"
+       id="svg">
+    <path id="starPath"
+          stroke="black"
+          stroke-width="2"
+          fill="none"
+          d=""></path>
+  </svg>
+  <div id="box1" class="box"></div>
+  <div id="box2" class="box"></div>
+  <div id="box3" class="box"></div>
+  <div id="box4" class="box"></div>
+  <div id="box5" class="box"></div>
+</div>
+
+
+<script src="../src/curvz.js"></script>
+
+<script>
+  var starPath = document.getElementById("starPath"),
+    box1 = document.getElementById("box1"),
+    box2 = document.getElementById("box2"),
+    box3 = document.getElementById("box3"),
+    box4 = document.getElementById("box4"),
+    box5 = document.getElementById("box5"),
+    duration = 2000,
+    easing = CURVZ.BOUNCEOUT,
+    viewOptions = {x0: 200, x1: 300, y0: 200, y1: 300},
+    customSpiral = function (opts) {
+      const options = opts || {},
+        a = options.a || 1,
+        r = options.r || 1,
+        start = 0,
+        end = 4 * Math.PI,
+        breakpoint = 2 * Math.PI;
+
+      return {
+        start: start,
+        end: end,
+        getXY: function (t) {
+          return {
+            x: (t < breakpoint) ? t / breakpoint * r * Math.cos(a * t) : Math.cos(t),
+            y: (t < breakpoint) ? t / breakpoint * r * Math.sin(a * t) : Math.sin(t)
+          }
+        }
+      };
+    };
+
+  var curve = CURVZ.curve(
+    CURVZ.HYPOTROCHOID({R: 1, r: 0.6, d: 1}),
+    viewOptions
+  );
+  var tEnd = [0.2, 0.4, 0.6, 0.8, 1];
+
+
+//  var curve = CURVZ.curve(
+//   CURVZ.SPIRAL({ a: 5, r: 1.5 }),
+//   viewOptions
+//  );
+//  var tEnd = [0.000001, 0.5, 0.6, 0.9, 1];
+
+//  var curve = CURVZ.curve(
+//    customSpiral({ a: 3, r: 1 }),
+//    viewOptions
+//  );
+//  var tEnd = [0.6, 0.7, 0.8, 0.9, 1];
+
+  CURVZ.drawCurve(starPath, curve, {
+    duration: duration,
+    easing: easing,
+    tEnd: 1
+  });
+
+
+  CURVZ.translateAlongCurve(box1, curve, {
+    duration: duration,
+    easing: easing,
+    tEnd: tEnd[0]
+  });
+  CURVZ.translateAlongCurve(box2, curve, {
+    duration: duration,
+    easing: easing,
+    tEnd: tEnd[1]
+  });
+  CURVZ.translateAlongCurve(box3, curve, {
+    duration: duration,
+    easing: easing,
+    tEnd: tEnd[2]
+  });
+  CURVZ.translateAlongCurve(box4, curve, {
+    duration: duration,
+    easing: easing,
+    tEnd: tEnd[3]
+  });
+  CURVZ.translateAlongCurve(box5, curve, {
+    duration: duration,
+    easing: easing,
+    tEnd: tEnd[4]
+  });
+
+
+</script>
+</body>
+</html>

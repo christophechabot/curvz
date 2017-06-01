@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<style>
+
+</style>
+
+<svg viewBox="0 0 400 400"
+     width="400"
+     height="400"
+     style="border: solid 1px #c1c1c1;">
+  <path id="myPath"
+        stroke="#EF233C"
+        stroke-width="2"
+        fill="none"
+        d=""></path>
+</svg>
+
+
+
+<script src="../src/curvz.js"></script>
+
+<script>
+  var myCurve = CURVZ.curve(
+    CURVZ.HYPOTROCHOID({ R: 1, r: 0.6, d: 1 }),
+    { x0: 200, y0: 200, x1: 300, y1: 300}
+  );
+
+  var myPath = document.getElementById("myPath");
+
+  CURVZ.drawCurve(myPath, myCurve,
+    {
+      duration: 3000,
+      easing: CURVZ.EASEINOUT,
+      nbPoints: 10000
+    }
+  );
+
+</script>
+</body>
+</html>
